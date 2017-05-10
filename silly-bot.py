@@ -1,3 +1,5 @@
+#Originally created by Evan Potter. Minor adaptations made by Brandon Oyer. 
+
 import os
 import time
 from slackclient import SlackClient
