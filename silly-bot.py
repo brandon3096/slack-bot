@@ -10,7 +10,7 @@ BOT_ID = os.environ.get("BOT_ID")
 
 # constants
 AT_BOT = "<@" + BOT_ID + ">"
-SILLY_COMMAND = "drop Evan's face"
+SILLY_COMMAND = ""
 
 # instantiate Slack
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
@@ -19,7 +19,7 @@ slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 def handle_command(command):
     response = "Not sure what you mean. Use the *" + SILLY_COMMAND
     if command.startswith(SILLY_COMMAND):
-        response = "http://imgur.com/2AwyQ3b"
+        response = ""
     slack_client.api_call("chat.postMessage", channel="#random", text=response, as_user=True)
 
 
