@@ -49,11 +49,23 @@ def handle_command(command, silly_channel, previous_channel, stamp):
             return stamp, previous_channel
 
     elif command.startswith(SHITPOST_COMMAND):
-        shitposts = imgur_client.subreddit_gallery('me_irl')
+        # Pick a subreddit
+        subreddits = ['me_irl', 'memes']
+        subreddit_index = randint(0,1)
+        subreddit = subreddits[subreddit_index]
+        print subreddit
+        # Get list of shitposts
+        shitposts = imgur_client.subreddit_gallery(subreddit)
+        # Pick a random one
         number_shitposts = len(shitposts)
         shitpost_index = randint(0, number_shitposts-1)
-        random_shitpost = shitposts[shitpost_index].link
-        slack_client.api_call("chat.postMessage", channel=silly_channel, text=random_shitpost, as_user=True)
+        random_shitpost = shitposts[shitpost_index]
+        # If it's an album, retry until we get an image
+        while random_shitpost.is_album:
+            shitpost_index = randint(0, number_shitposts-1)
+            random_shitpost = shitposts[shitpost_index]
+        # Post the image
+        slack_client.api_call("chat.postMessage", channel=silly_channel, text=random_shitpost.link, as_user=True)
 
     else:
         slack_client.api_call("chat.postMessage", channel=silly_channel, text=response, as_user=True)
