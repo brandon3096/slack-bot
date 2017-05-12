@@ -20,11 +20,13 @@ ERASE_COMMAND = "tidy up"
 SHITPOST_COMMAND = "shitpost"
 
 # instantiate Slack
-slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+slack_client = SlackClient(SLACK_BOT_TOKEN)
 imgur_client = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 
 def handle_command(command, silly_channel, previous_channel, stamp):
+    
     response = "Not sure what you mean. Use *" + SILLY_COMMAND +", *" + ERASE_COMMAND + ", or *" + SHITPOST_COMMAND
+    
     if command.startswith(ERASE_COMMAND):
         channel_list = []
         server_reply = slack_client.api_call("channels.list", exclude_archived=True)
@@ -35,7 +37,8 @@ def handle_command(command, silly_channel, previous_channel, stamp):
             for message in server_reply['messages']:
                 if message['user'] == BOT_ID:
                     slack_client.api_call("chat.delete", ts=message['ts'], channel=item, as_user=True)
-    if command.startswith(SILLY_COMMAND):
+
+    elif command.startswith(SILLY_COMMAND):
         if stamp != 0:
             slack_client.api_call("chat.delete", ts=stamp, channel=previous_channel, as_user=True)
         response = "http://imgur.com/2AwyQ3b"
@@ -44,12 +47,16 @@ def handle_command(command, silly_channel, previous_channel, stamp):
             stamp = server_reply['ts']
             previous_channel = server_reply['channel']
             return stamp, previous_channel
-    if command.startswith(SHITPOST_COMMAND):
+
+    elif command.startswith(SHITPOST_COMMAND):
         shitposts = imgur_client.subreddit_gallery('me_irl')
         number_shitposts = len(shitposts)
         shitpost_index = randint(0, number_shitposts-1)
         random_shitpost = shitposts[shitpost_index].link
         slack_client.api_call("chat.postMessage", channel=silly_channel, text=random_shitpost, as_user=True)
+
+    else:
+        slack_client.api_call("chat.postMessage", channel=silly_channel, text=response, as_user=True)
 
     return None, None
 
