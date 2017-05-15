@@ -50,8 +50,8 @@ def handle_command(command, silly_channel, previous_channel, stamp):
 
     elif command.startswith(SHITPOST_COMMAND):
         # Pick a subreddit
-        subreddits = ['me_irl', 'memes']
-        subreddit_index = randint(0,1)
+        subreddits = ['me_irl', 'memes', 'blackpeopletwitter']
+        subreddit_index = randint(0,len(subreddits)-1)
         subreddit = subreddits[subreddit_index]
         print subreddit
         # Get list of shitposts
@@ -61,7 +61,7 @@ def handle_command(command, silly_channel, previous_channel, stamp):
         shitpost_index = randint(0, number_shitposts-1)
         random_shitpost = shitposts[shitpost_index]
         # If it's an album, retry until we get an image
-        while random_shitpost.is_album:
+        while random_shitpost.is_album or random_shitpost.nsfw:
             shitpost_index = randint(0, number_shitposts-1)
             random_shitpost = shitposts[shitpost_index]
         # Post the image
@@ -93,5 +93,6 @@ if __name__ == '__main__':
                     command_text = text.split(AT_BOT)[1].strip().lower()
                     TIMESTAMP, previous_channel = handle_command(command_text, channel, previous_channel, TIMESTAMP)
             time.sleep(READ_DELAY)
+        print("DISCONNECTED")
     else:
         print("Connection failed. Invalid Slack token or bot ID?")
