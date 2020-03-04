@@ -1,4 +1,4 @@
-# Originally created by Evan Potter. Adaptations made by Brandon Oyer, May 11th 2017.
+# Originally created by Evan. Adaptations made by Brandon Oyer.
 
 import os
 import time
@@ -17,7 +17,7 @@ IMGUR_CLIENT_SECRET = os.environ.get("IMGUR_CLIENT_SECRET")
 AT_BOT = "<@" + BOT_ID + ">"
 SILLY_COMMAND = "drop the face"
 ERASE_COMMAND = "tidy up"
-SHITPOST_COMMAND = "shitpost"
+POST_COMMAND = "shitpost"
 
 # instantiate Slack
 slack_client = SlackClient(SLACK_BOT_TOKEN)
@@ -25,8 +25,9 @@ imgur_client = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 
 def handle_command(command, silly_channel, previous_channel, stamp):
     
-    response = "Not sure what you mean. Use *" + SILLY_COMMAND +", *" + ERASE_COMMAND + ", or *" + SHITPOST_COMMAND
+    response = "Not sure what you mean. Use *" + SILLY_COMMAND +", *" + ERASE_COMMAND + ", or *" + POST_COMMAND
     
+    # Erase messages
     if command.startswith(ERASE_COMMAND):
         channel_list = []
         server_reply = slack_client.api_call("channels.list", exclude_archived=True)
@@ -37,7 +38,8 @@ def handle_command(command, silly_channel, previous_channel, stamp):
             for message in server_reply['messages']:
                 if message['user'] == BOT_ID:
                     slack_client.api_call("chat.delete", ts=message['ts'], channel=item, as_user=True)
-
+    
+    # Post a picture of Evan
     elif command.startswith(SILLY_COMMAND):
         if stamp != 0:
             slack_client.api_call("chat.delete", ts=stamp, channel=previous_channel, as_user=True)
@@ -48,7 +50,8 @@ def handle_command(command, silly_channel, previous_channel, stamp):
             previous_channel = server_reply['channel']
             return stamp, previous_channel
 
-    elif command.startswith(SHITPOST_COMMAND):
+    # Post a meme
+    elif command.startswith(POST_COMMAND):
         # Pick a subreddit
         subreddits = ['me_irl', 'memes', 'blackpeopletwitter']
         subreddit_index = randint(0,len(subreddits)-1)
