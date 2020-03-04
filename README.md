@@ -1,3 +1,3 @@
 # slack-bot
 
-It's a bot. For slack.
+A bot for a slack channel to post memes from reddit with chat commands.
