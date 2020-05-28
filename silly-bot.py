@@ -17,7 +17,7 @@ IMGUR_CLIENT_SECRET = os.environ.get("IMGUR_CLIENT_SECRET")
 AT_BOT = "<@" + BOT_ID + ">"
 SILLY_COMMAND = "drop the face"
 ERASE_COMMAND = "tidy up"
-POST_COMMAND = "shitpost"
+POST_COMMAND = "post"
 
 # instantiate Slack
 slack_client = SlackClient(SLACK_BOT_TOKEN)
@@ -57,18 +57,18 @@ def handle_command(command, silly_channel, previous_channel, stamp):
         subreddit_index = randint(0,len(subreddits)-1)
         subreddit = subreddits[subreddit_index]
         print subreddit
-        # Get list of shitposts
-        shitposts = imgur_client.subreddit_gallery(subreddit)
+        # Get list of posts
+        posts = imgur_client.subreddit_gallery(subreddit)
         # Pick a random one
-        number_shitposts = len(shitposts)
-        shitpost_index = randint(0, number_shitposts-1)
-        random_shitpost = shitposts[shitpost_index]
+        number_posts = len(shitposts)
+        post_index = randint(0, number_posts-1)
+        random_post = posts[post_index]
         # If it's an album, retry until we get an image
-        while random_shitpost.is_album or random_shitpost.nsfw:
-            shitpost_index = randint(0, number_shitposts-1)
-            random_shitpost = shitposts[shitpost_index]
+        while random_post.is_album or random_post.nsfw:
+            post_index = randint(0, number_posts-1)
+            random_post = posts[post_index]
         # Post the image
-        slack_client.api_call("chat.postMessage", channel=silly_channel, text=random_shitpost.link, as_user=True)
+        slack_client.api_call("chat.postMessage", channel=silly_channel, text=random_post.link, as_user=True)
 
     else:
         slack_client.api_call("chat.postMessage", channel=silly_channel, text=response, as_user=True)
